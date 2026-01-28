@@ -38,4 +38,24 @@ class Instructor extends Model
     {
         return $this->morphMany(Rating::class, 'ratable');
     }
+
+    public function getTotalStudentsAttribute(): int
+    {
+        return $this->courses()->sum('total_students');
+    }
+
+    public function scopePopular($query)
+    {
+        return $query->withCount(['courses as total_students_count' => function ($query) {
+            $query->select(DB::raw('SUM(total_students)'));
+        }])->orderByDesc('total_students_count');
+    }
+
+    public function scopeSearch($query, string $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
 }
