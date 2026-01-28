@@ -39,7 +39,6 @@ export default function Show({
         const percentage = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
         return { stars, count, percentage };
     });
-    console.log(course);
 
     return (
         <AppLayout>

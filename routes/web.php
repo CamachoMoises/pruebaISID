@@ -8,7 +8,13 @@ use App\Http\Controllers\InstructorController;
 Route::get('/', function () {
     return redirect('/dashboard');
 });
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::prefix('dashboard')->group(
+    function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/sync', [DashboardController::class, 'sync'])->name('dashboard.sync');
+    }
+);
+
 Route::prefix('instructors')->group(function () {
     Route::get('/', [InstructorController::class, 'index'])->name('instructors.index');
 });
@@ -21,4 +27,5 @@ Route::prefix('courses')->group(function () {
     Route::get('/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
     Route::put('/{course}', [CourseController::class, 'update'])->name('courses.update');
     Route::delete('/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+    Route::get('/rating', [DashboardController::class, 'rating'])->name('courses.rating');
 });

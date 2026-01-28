@@ -56,6 +56,12 @@ export default function Index({ courses }: Props) {
                             </svg>
                             Nuevo Curso
                         </Link>
+                        <Link
+                            href="/courses/rating"
+                            className="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
+                        >
+                            Calcular el rating de los cursos
+                        </Link>
                     </div>
 
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RatingCoursesJob;
 use App\Models\Course;
 use App\Models\Instructor;
+use App\Services\CourseRatingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -11,8 +13,13 @@ use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
+    protected  $ratingService;
 
-    public function index(Request $request): Response
+    public function __construct(CourseRatingService $ratingService)
+    {
+        $this->ratingService = $ratingService;
+    }
+    public function index(): Response
     {
         $courses = Course::with(['instructor'])
             ->withCount('lessons')
@@ -46,7 +53,7 @@ class CourseController extends Controller
                 $query->with('user')->latest();
             },
             'favoritedBy' => function ($query) {
-                $query->latest()->limit(10); // REMUEVE ->with('user')
+                $query->latest()->limit(10);
             }
         ]);
 
@@ -152,5 +159,24 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->back()->with('success', 'Curso eliminado correctamente');
+    }
+
+
+    public function rating()
+    {
+        try {
+            RatingCoursesJob::dispatch();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Calculo de rating iniciado. Se procesará en segundo plano.',
+                'job_id' => null,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al iniciar Calculo: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
