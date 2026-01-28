@@ -27,4 +27,37 @@ class Lesson extends Model
     {
         return $this->belongsTo(Course::class);
     }
+
+    public function next(): ?self
+    {
+        return self::where('course_id', $this->course_id)
+            ->where('order', '>', $this->order)
+            ->orderBy('order')
+            ->first();
+    }
+
+    public function previous(): ?self
+    {
+        return self::where('course_id', $this->course_id)
+            ->where('order', '<', $this->order)
+            ->orderByDesc('order')
+            ->first();
+    }
+
+    public function isFirst(): bool
+    {
+        return $this->order === 1 ||
+            $this->order === $this->course->lessons()->min('order');
+    }
+
+
+    public function isLast(): bool
+    {
+        return $this->order === $this->course->lessons()->max('order');
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('order');
+    }
 }

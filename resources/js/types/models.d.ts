@@ -34,11 +34,11 @@ export interface Course {
     title: string;
     slug: string;
     description: string;
-    thumbnail?: string;
     price: number;
     status: CourseStatus;
     average_rating: number;
     total_ratings: number;
+    level: 'principiante' | 'intermedio' | 'avanzado';
     total_students: number;
     created_at: string;
     updated_at: string;

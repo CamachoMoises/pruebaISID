@@ -96,4 +96,90 @@ class User extends Authenticatable
     {
         return $this->ratings()->where('ratable_type', Instructor::class);
     }
+    public function favoriteCourse(Course $course): void
+    {
+        if (!$this->hasFavorited($course)) {
+            $this->favoriteCourses()->attach($course->id, [
+                'favorited_at' => now(),
+            ]);
+        }
+    }
+
+    public function unfavoriteCourse(Course $course): void
+    {
+        $this->favoriteCourses()->detach($course->id);
+    }
+
+    public function toggleFavorite(Course $course): bool
+    {
+        if ($this->hasFavorited($course)) {
+            $this->unfavoriteCourse($course);
+            return false;
+        } else {
+            $this->favoriteCourse($course);
+            return true;
+        }
+    }
+
+    public function hasRated(Course|Instructor $ratable): bool
+    {
+        return $this->ratings()
+            ->where('ratable_id', $ratable->id)
+            ->where('ratable_type', get_class($ratable))
+            ->exists();
+    }
+
+    public function getRatingFor(Course|Instructor $ratable): ?Rating
+    {
+        return $this->ratings()
+            ->where('ratable_id', $ratable->id)
+            ->where('ratable_type', get_class($ratable))
+            ->first();
+    }
+
+    public function rate(Course|Instructor $ratable, int $rating, ?string $review = null): Rating
+    {
+        return $this->ratings()->updateOrCreate(
+            [
+                'ratable_id' => $ratable->id,
+                'ratable_type' => get_class($ratable),
+            ],
+            [
+                'rating' => $rating,
+                'review' => $review,
+            ]
+        );
+    }
+
+    public function comment(Course|Instructor $commentable, string $content, bool $isApproved = true): Comment
+    {
+        return $this->comments()->create([
+            'commentable_id' => $commentable->id,
+            'commentable_type' => get_class($commentable),
+            'content' => $content,
+            'is_approved' => $isApproved,
+        ]);
+    }
+
+
+    public function scopeFavoritedCourse($query, Course $course)
+    {
+        return $query->whereHas('favoriteCourses', function ($q) use ($course) {
+            $q->where('course_id', $course->id);
+        });
+    }
+
+    public function scopeWithMostFavorites($query)
+    {
+        return $query->withCount('favoriteCourses')
+            ->orderByDesc('favorite_courses_count');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where(function ($q) {
+            $q->has('comments')
+                ->orHas('ratings');
+        });
+    }
 }
