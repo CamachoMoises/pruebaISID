@@ -96,6 +96,7 @@ export default function Index({ courses }: Props) {
                                     >
                                         Eliminar
                                     </button>
+
                                     <button
                                         onClick={() => {
                                             window.location.href = `/courses/${course.id}/edit`;
@@ -105,7 +106,7 @@ export default function Index({ courses }: Props) {
                                         Editar
                                     </button>
                                     <div className="absolute top-4 right-4 rounded bg-white/90 px-2 py-1 text-sm font-bold text-blue-600 shadow-sm backdrop-blur">
-                                        ${course.price}
+                                        €{course.price}
                                     </div>
                                 </div>
 
@@ -127,10 +128,14 @@ export default function Index({ courses }: Props) {
                                             </svg>
                                         </div>
                                     </div>
-
-                                    <h2 className="mb-2 line-clamp-2 text-xl font-bold text-gray-900 transition-colors group-hover:text-blue-600">
-                                        {course.title}
-                                    </h2>
+                                    <Link
+                                        href={`/courses/${course.id}`}
+                                        className="inline-block"
+                                    >
+                                        <h2 className="mb-2 line-clamp-2 text-xl font-bold text-gray-900 transition-colors group-hover:text-blue-600">
+                                            {course.title}
+                                        </h2>
+                                    </Link>
 
                                     <p className="mb-4 line-clamp-2 text-sm text-gray-600">
                                         {course.description}

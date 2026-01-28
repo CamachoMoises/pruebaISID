@@ -32,6 +32,34 @@ class CourseController extends Controller
             'courses' => $courses,
         ]);
     }
+    public function show(Course $course): Response
+    {
+        $course->load([
+            'instructor',
+            'lessons' => function ($query) {
+                $query->orderBy('order');
+            },
+            'comments' => function ($query) {
+                $query->with('user')->latest();
+            },
+            'ratings' => function ($query) {
+                $query->with('user')->latest();
+            },
+            'favoritedBy' => function ($query) {
+                $query->latest()->limit(10); // REMUEVE ->with('user')
+            }
+        ]);
+
+
+
+        return Inertia::render('Courses/Show', [
+            'course' => $course,
+            'averageRating' => $course->average_rating,
+            'totalRatings' => $course->total_ratings,
+            'totalStudents' => $course->total_students,
+            'lessonsCount' => $course->lessons_count,
+        ]);
+    }
     public function create(): Response
     {
         return Inertia::render('Courses/Create', [
@@ -44,7 +72,6 @@ class CourseController extends Controller
             'instructor_id' => 'required|exists:instructors,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'level' => 'required|in:principiante,intermedio,avanzado',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:borrador,publicado,archivado',
         ]);
@@ -81,7 +108,6 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'thumbnail' => 'nullable|url',
-            'level' => 'required|in:principiante,intermedio,avanzado',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:borrador,publicado,archivado',
         ]);
@@ -97,6 +123,28 @@ class CourseController extends Controller
             ->with('success', 'Curso actualizado exitosamente.');
     }
 
+    public function toggleFavorite(Course $course, Request $request)
+    {
+        $request->validate([
+            'action' => 'sometimes|in:favorite,unfavorite',
+        ]);
+
+        $user = $request->user();
+
+        if (!$user) {
+            return back()->with('warning', 'Debes iniciar sesión para marcar como favorito.');
+        }
+
+        if ($user->hasFavorited($course)) {
+            $user->unfavoriteCourse($course);
+            $message = 'Curso removido de favoritos.';
+        } else {
+            $user->favoriteCourse($course);
+            $message = 'Curso agregado a favoritos.';
+        }
+
+        return back()->with('success', $message);
+    }
 
 
     public function destroy(Course $course)

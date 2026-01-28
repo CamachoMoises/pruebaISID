@@ -12,7 +12,6 @@ export default function Create({ instructors }: Props) {
         instructor_id: '',
         title: '',
         description: '',
-        level: 'principiante',
         price: '',
         status: 'borrador',
     });
@@ -129,89 +128,6 @@ export default function Create({ instructors }: Props) {
                                         {errors.description}
                                     </p>
                                 )}
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                                {/* Nivel */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Nivel
-                                    </label>
-                                    <select
-                                        value={data.level}
-                                        onChange={(e) =>
-                                            setData('level', e.target.value)
-                                        }
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        <option value="principiante">
-                                            Principiante
-                                        </option>
-                                        <option value="intermedio">
-                                            Intermedio
-                                        </option>
-                                        <option value="avanzado">
-                                            Avanzado
-                                        </option>
-                                    </select>
-                                    {errors.level && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.level}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Precio */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Precio ($)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={data.price}
-                                        onChange={(e) =>
-                                            setData('price', e.target.value)
-                                        }
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                                        required
-                                    />
-                                    {errors.price && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.price}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Estado */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Estado
-                                    </label>
-                                    <select
-                                        value={data.status}
-                                        onChange={(e) =>
-                                            setData('status', e.target.value)
-                                        }
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        <option value="borrador">
-                                            Borrador
-                                        </option>
-                                        <option value="publicado">
-                                            Publicado
-                                        </option>
-                                        <option value="archivado">
-                                            Archivado
-                                        </option>
-                                    </select>
-                                    {errors.status && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {errors.status}
-                                        </p>
-                                    )}
-                                </div>
                             </div>
 
                             {/* Botones */}

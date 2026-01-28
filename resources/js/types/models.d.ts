@@ -38,7 +38,6 @@ export interface Course {
     status: CourseStatus;
     average_rating: number;
     total_ratings: number;
-    level: 'principiante' | 'intermedio' | 'avanzado';
     total_students: number;
     created_at: string;
     updated_at: string;
